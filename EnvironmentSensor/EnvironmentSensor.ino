@@ -28,7 +28,7 @@ void setup() {
   pinMode(PIR_PIN,INPUT);         //Sätter digital pin 2 till ingång
   Serial.println("Initializing microphone");
 
-  Serial.print("Loading[");/*
+  Serial.print("Loading[");
   microphone(20000,1);
   for(int i = 0;i < 10;i++){
     Serial.print(".");
@@ -43,10 +43,10 @@ void setup() {
     if(i%5==0) Serial.print(".");
     temperature(385,1);
   }
-  Serial.println("]");*/
+  Serial.println("]");
   Serial.println("Initializing interrupts");
   attachInterrupt(digitalPinToInterrupt(PIR_PIN), pir, RISING);
-  attachInterrupt(digitalPinToInterrupt(3), inut, FALLING);   //initializing inut
+  attachInterrupt(digitalPinToInterrupt(3), inut, RISING);   //initializing inut
   Serial.println("SETUP COMPLETE");
   Serial.println(" ");
   Serial.println("temp\ttempK\tCO2ppm\tKppm\tljudnu\tljudmin\tfukt\tfuktK\tpir\tantal");
@@ -59,14 +59,14 @@ void loop() {
   // put your main code here, to run repeatedly:
   temptemp2 = temptemp;
   tempgas2 = tempgas;
-  /*for(int i = 0;i < 10;i++){
+  for(int i = 0;i < 10;i++){
     if (i%2 == 0){
       tempmic = microphone(10000,1);
       if (tempmic>micodds) micodds=tempmic;
     }
     gas(1);
     moist(1);
-    temperature(385,1);*/
+    temperature(385,1);
   }
   temptemp = temperature(385,0);
   tempgas = gas(0);
