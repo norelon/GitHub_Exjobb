@@ -17,17 +17,17 @@ void setup() {
   Serial.begin(9600); //set baud rate
   Serial.println("Initializing pins");
   pinMode(PWM_PIN, INPUT);        //13
+  pinMode(5, INPUT);              //in ut
   pinMode(4, INPUT);              //in ut
-  pinMode(3, INPUT);              //in ut
   pinMode(A0, OUTPUT);             //A0, för att se volt drop
   pinMode(A1, OUTPUT);             //A1, för att se volt drop
   pinMode(IN_PIN, OUTPUT);        //A2, för fukt
   pinMode(OUT_PIN, OUTPUT);       //A3, för fukt
   pinMode(MIC_PIN, INPUT);        //A4
-  pinMode(A5, INPUT);             //A5 gas sensor
-  pinMode(LED_PIN,OUTPUT);        //Sätter digital pin 4 till utgång för LED-lampa
+  pinMode(GAS_PIN, INPUT);             //A5 gas sensor
   pinMode(PIR_PIN,INPUT);         //Sätter digital pin 2 till ingång
   Serial.println("Initializing microphone");
+
   Serial.print("Loading[");/*
   microphone(20000,1);
   for(int i = 0;i < 10;i++){
@@ -44,7 +44,9 @@ void setup() {
     temperature(385,1);
   }
   Serial.println("]");*/
-  interrupt_init();
+  Serial.println("Initializing interrupts");
+  attachInterrupt(digitalPinToInterrupt(PIR_PIN), pir, RISING);
+  attachInterrupt(digitalPinToInterrupt(3), inut, FALLING);   //initializing inut
   Serial.println("SETUP COMPLETE");
   Serial.println(" ");
   Serial.println("temp\ttempK\tCO2ppm\tKppm\tljudnu\tljudmin\tfukt\tfuktK\tpir\tantal");
@@ -57,30 +59,22 @@ void loop() {
   // put your main code here, to run repeatedly:
   temptemp2 = temptemp;
   tempgas2 = tempgas;
-  /*
-  inut();
-  for(int i = 0;i < 10;i++){
+  /*for(int i = 0;i < 10;i++){
     if (i%2 == 0){
-      inut();
       tempmic = microphone(10000,1);
       if (tempmic>micodds) micodds=tempmic;
     }
-    inut();
     gas(1);
     moist(1);
-    inut();   
-    temperature(385,1);
-    inut();
+    temperature(385,1);*/
   }
-  temptemp = temperature(385,0);*/
-  inut();
+  temptemp = temperature(385,0);
   tempgas = gas(0);
   Serial.print("\t");
   Serial.print(micodds);
   Serial.print("\t");
   Serial.print(microphone_minmaxljud);
   moist(0);
-  inut();
   if(pirhigh >= 1 || PIR_PIN == 1){
     pirhigh = 0;
     Serial.print("\t1\t");

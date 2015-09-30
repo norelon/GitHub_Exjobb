@@ -2,7 +2,7 @@
 #define ljudsensor_h
 #include "arduino.h"
 
-int MIC_PIN = A5;                               //Deklarerar ingång för tempsensor
+byte MIC_PIN = 4;                               //Deklarerar ingång för tempsensor
 
 float microphone_minmaxljud = 1023;    //variabel för att hitta tyst.
 

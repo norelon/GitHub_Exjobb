@@ -3,7 +3,6 @@
 #include "arduino.h"
 
 byte PWM_PIN = 13;                             //Deklarerar ingång för tempsensor
-
 float temperature(int numberofvaliddutycycles = 385, bool no_write = 1) {//Framtestat stabilitetsvärde
   static float pwm_high;
   static float pwm_low;

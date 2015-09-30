@@ -2,7 +2,7 @@
 #define gassensor_h
 #include "arduino.h"
 
-
+int GAS_PIN = A5;
 
 // The loop routine runs over and over again forever
 float gas(bool no_write = 1) {
@@ -16,12 +16,11 @@ float gas(bool no_write = 1) {
   static float Zp = 0.0;
   static float Xe = 400.0;             //startvärde
   // Analog pin 0 will be called 'sensor'
-  static int sensor = A5;
   // Set the initial sensorValue to 0
   static float sensorValue = 0;
   static float ppm = 0;
   
-  sensorValue = analogRead(sensor);
+  sensorValue = analogRead(GAS_PIN);
   sensorValue = (sensorValue / 1000) + 0.126; //Kalibrering efter 350 ppm utomhus
   ppm = ((sensorValue - 0.33) / 0.000066);    //Uppskattning av formel från datablad
 
