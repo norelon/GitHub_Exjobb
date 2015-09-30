@@ -1,9 +1,10 @@
-#include "ljudsensor.h"   //microphone();
-#include "temp2sensor.h"  //temperature();
-#include "fukt4sensor.h"  //moist();
-#include "Gas_sensor.h"   //gas();
-#include "pirsensor.h"    //pir();
+#include "ljudsensor.h"       //microphone();
+#include "temp2sensor.h"      //temperature();
+#include "fukt4sensor.h"      //moist();
+#include "Gas_sensor.h"       //gas();
+#include "pirsensor.h"        //pir();
 #include "voltage_check.h"    //volt();
+#include "loginut.h"          //inut();
 
   float temptemp2 = 0;
   float tempgas2 = 0; 
@@ -16,16 +17,18 @@ void setup() {
   Serial.begin(9600); //set baud rate
   Serial.println("Initializing pins");
   pinMode(PWM_PIN, INPUT);        //13
-  pinMode(0, OUTPUT);             //A0, för att se volt drop
-  pinMode(1, OUTPUT);             //A1, för att se volt drop
-  pinMode(IN_PIN, OUTPUT);        //A2, för temperatur
-  pinMode(OUT_PIN, OUTPUT);       //A3, för temperatur
+  pinMode(4, INPUT);              //in ut
+  pinMode(3, INPUT);              //in ut
+  pinMode(A0, OUTPUT);             //A0, för att se volt drop
+  pinMode(A1, OUTPUT);             //A1, för att se volt drop
+  pinMode(IN_PIN, OUTPUT);        //A2, för fukt
+  pinMode(OUT_PIN, OUTPUT);       //A3, för fukt
   pinMode(MIC_PIN, INPUT);        //A4
-  pinMode(5, INPUT);              //A5 gas sensor
+  pinMode(A5, INPUT);             //A5 gas sensor
   pinMode(LED_PIN,OUTPUT);        //Sätter digital pin 4 till utgång för LED-lampa
   pinMode(PIR_PIN,INPUT);         //Sätter digital pin 2 till ingång
   Serial.println("Initializing microphone");
-  Serial.print("Loading[");
+  Serial.print("Loading[");/*
   microphone(20000,1);
   for(int i = 0;i < 10;i++){
     Serial.print(".");
@@ -40,10 +43,11 @@ void setup() {
     if(i%5==0) Serial.print(".");
     temperature(385,1);
   }
-  Serial.println("]");
+  Serial.println("]");*/
   interrupt_init();
   Serial.println("SETUP COMPLETE");
   Serial.println(" ");
+  Serial.println("temp\ttempK\tCO2ppm\tKppm\tljudnu\tljudmin\tfukt\tfuktK\tpir\tantal");
 }
 
 void loop() {
@@ -53,30 +57,38 @@ void loop() {
   // put your main code here, to run repeatedly:
   temptemp2 = temptemp;
   tempgas2 = tempgas;
+  /*
+  inut();
   for(int i = 0;i < 10;i++){
     if (i%2 == 0){
+      inut();
       tempmic = microphone(10000,1);
       if (tempmic>micodds) micodds=tempmic;
     }
+    inut();
     gas(1);
-    moist(1);   
+    moist(1);
+    inut();   
     temperature(385,1);
+    inut();
   }
-  temptemp = temperature(385,0);
+  temptemp = temperature(385,0);*/
+  inut();
   tempgas = gas(0);
   Serial.print("\t");
   Serial.print(micodds);
   Serial.print("\t");
   Serial.print(microphone_minmaxljud);
   moist(0);
+  inut();
   if(pirhigh >= 1 || PIR_PIN == 1){
     pirhigh = 0;
-    Serial.print("\t1");
+    Serial.print("\t1\t");
   }
   else{ 
-    Serial.print("\t0");
+    Serial.print("\t0\t");
   }
-  Serial.println("");
+  Serial.println(inut_tot);
   /*if (tempmic >= 0.95) print_odds(tempmic);
   else if(pirhigh >= 1 || PIR_PIN == 1)
   { 
