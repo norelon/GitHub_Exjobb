@@ -4,8 +4,7 @@
 
 byte PWM_PIN = 13;                             //Deklarerar ingång för tempsensor
 
-
-float temperature(int numberofvaliddutycycles = 385,bool no_write = 1) {//Framtestat stabilitetsvärde
+float temperature(int numberofvaliddutycycles = 385, bool no_write = 1) {//Framtestat stabilitetsvärde
   static float pwm_high;
   static float pwm_low;
   static float dutycycle = 0;
@@ -55,10 +54,10 @@ float temperature(int numberofvaliddutycycles = 385,bool no_write = 1) {//Framte
       Xe = G * (temperature - Zp) + Xp;
       
       if(no_write == 0){
-        Serial.print("Tempsensor:\t");
+        //Serial.print("Tempsensor:\t");
         Serial.print(temperature);                        //Skriver temperaturen i monitorn 
-        Serial.print("\tKalman:\t");
-        Serial.println(Xe);                        //Skriver temperaturen i monitorn                         
+        Serial.print("\t");
+        Serial.print(Xe);                        //Skriver temperaturen i monitorn                         
       }                
       totalsum = 0;
       count = 0;

@@ -14,7 +14,7 @@ volatile int isrpir = 0;
 
 void pir() {
   long int PirTid = 0;
-  Serial.println("Pirsensor:\tDetektion");
+  //Serial.println("Pirsensor:\tDetektion");
   pirhigh++;
   /*while (PIR_PIN){                            //Så länge insignalen är hög
     if (PirTid == 0)                          //För att skriva "Detektion" en gång

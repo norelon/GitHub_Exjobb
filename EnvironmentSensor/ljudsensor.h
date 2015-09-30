@@ -4,11 +4,13 @@
 
 byte MIC_PIN = 4;                               //Deklarerar ingång för tempsensor
 
+float microphone_minmaxljud = 1023;    //variabel för att hitta tyst.
+
 float microphone(int trackmax = 10000,bool no_write = 1)
 {
   const float microphone_tyst = 585;                       //högsta uppmätta värdet, då rummet är tyst
   const float microphone_prat = 600;                       //uppmätt värde, för tal i rummet (det viktiga är prat/tyst)
-  static float microphone_minmaxljud = 1023;    //variabel för att hitta tyst.
+
   static float microphone_maxljud    = 0;                //sätt till litet
   static float microphone_minimum    = 1023;               //sätt till stort
   static unsigned int count_ja = 0;
@@ -27,8 +29,10 @@ float microphone(int trackmax = 10000,bool no_write = 1)
     if (track==trackmax){
       count_ja++;
       track=0; //set back track to zero
-      if (microphone_numax<microphone_minmaxljud && microphone_numax > (microphone_maxljud*0.55) && microphone_minimum<microphone_minmaxljud) microphone_minmaxljud=microphone_numax;
-      if (microphone_numax < microphone_minmaxljud*(microphone_prat/microphone_tyst)){
+      if (microphone_numax<microphone_minmaxljud && microphone_numax > (microphone_maxljud*0.55) 
+        && microphone_minimum<microphone_minmaxljud) microphone_minmaxljud=microphone_numax; 
+      return microphone_numax;
+      /*if (microphone_numax < microphone_minmaxljud*(microphone_prat/microphone_tyst)){
             if(no_write == 0)
             {
               Serial.print("Ljudsensor:\t");
@@ -59,7 +63,7 @@ float microphone(int trackmax = 10000,bool no_write = 1)
               }
             }
             return ((microphone_numax-microphone_minmaxljud/2)/(microphone_maxljud-microphone_minmaxljud/2));
-      }
+      }*/
     }
   }
 }

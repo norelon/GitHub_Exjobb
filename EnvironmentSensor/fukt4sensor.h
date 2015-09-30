@@ -33,7 +33,7 @@ int moist(bool no_write = 1)
       pinMode(IN_PIN, OUTPUT);
 
       float capacitance = (float)val * IN_CAP_TO_GND / (float)(MAX_ADC_VALUE - val);
-      float humidity=((capacitance-330)/60)+55;
+      float humidity=((capacitance-330)/4)+55;
 
       
       //Kalmanprocess
@@ -48,18 +48,14 @@ int moist(bool no_write = 1)
       //Serial.print(capacitance, 3);
       //Serial.print(F(" pF ("));
       if (no_write == 0){
-
-        
-        Serial.print("Fuktighet:\t");
+        Serial.print("\t");
         //Serial.print(val);
         //Serial.print(F(") "));
         Serial.print(humidity);
-        Serial.print(" procent\tKalman(");
-        
+        Serial.print("\t");
         Serial.print(Xe);
-        Serial.println(")");
       }
-      return val;
+      return Xe;
     }
     else
     {

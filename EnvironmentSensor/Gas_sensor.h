@@ -34,12 +34,12 @@ float gas(bool no_write = 1) {
   Xe = G * (ppm - Zp) + Xp;
 
   if (no_write == 0){
-    Serial.print("Sensor CO2:\t");
+    Serial.print("\t");
     Serial.print(ppm);
     //Serial.println("");
-    Serial.print("PPM\tKalman: ");
-    Serial.println(Xe);
+    Serial.print("\t");
+    Serial.print(Xe);
   }
-  return sensorValue;
+  return Xe;
 }
 #endif

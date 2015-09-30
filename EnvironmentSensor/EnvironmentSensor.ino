@@ -24,7 +24,6 @@ void setup() {
   pinMode(5, INPUT);              //A5 gas sensor
   pinMode(LED_PIN,OUTPUT);        //Sätter digital pin 4 till utgång för LED-lampa
   pinMode(PIR_PIN,INPUT);         //Sätter digital pin 2 till ingång
-  
   Serial.println("Initializing microphone");
   Serial.print("Loading[");
   microphone(20000,1);
@@ -52,31 +51,33 @@ void loop() {
   float tempmic = 0;
   float micodds = 0;
   // put your main code here, to run repeatedly:
-  Serial.println(" ");
-  volt();
   temptemp2 = temptemp;
   tempgas2 = tempgas;
   for(int i = 0;i < 10;i++){
     if (i%2 == 0){
       tempmic = microphone(10000,1);
       if (tempmic>micodds) micodds=tempmic;
-      gas(1);
-      moist(1);
-    }   
+    }
+    gas(1);
+    moist(1);   
     temperature(385,1);
   }
-  temptemp = temperature(385,1);
+  temptemp = temperature(385,0);
   tempgas = gas(0);
-  Serial.print("Ljudsensor:\t");
-  if(micodds>0.5) Serial.print("JA\t(");
-  else  Serial.print("NEJ\t(");
+  Serial.print("\t");
   Serial.print(micodds);
-  Serial.println(")");
-  Serial.print("Temperatur:\t");
-  Serial.print(temptemp);
-  Serial.println(" Celsius");
+  Serial.print("\t");
+  Serial.print(microphone_minmaxljud);
   moist(0);
-  if (tempmic >= 0.95) print_odds(tempmic);
+  if(pirhigh >= 1 || PIR_PIN == 1){
+    pirhigh = 0;
+    Serial.print("\t1");
+  }
+  else{ 
+    Serial.print("\t0");
+  }
+  Serial.println("");
+  /*if (tempmic >= 0.95) print_odds(tempmic);
   else if(pirhigh >= 1 || PIR_PIN == 1)
   { 
     pirhigh = 0;
@@ -84,7 +85,7 @@ void loop() {
   }
   else if (micodds > 0.25) print_odds(micodds); 
   else if (temptemp2 < temptemp && (tempgas2/10) < (tempgas/10)) print_odds(0.25);
-  else print_odds(micodds);
+  else print_odds(micodds);*/
 }
 
 void print_odds(float nuodds)
