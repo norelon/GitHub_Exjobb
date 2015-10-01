@@ -2,26 +2,26 @@
 #define fukt4sensor_h
 #include "arduino.h"
 
-const int OUT_PIN = A3;
 const int IN_PIN = A2;
-
-
+const int OUT_PIN = A3;
 
 int moist(bool no_write = 1)
 {
-  static float variance = 0.038688779;  //Uppmätt värde efter 200 samplingar utan Kalman
-  static float varianceProcess = 1e-8; //snabbhet i systemet
+  static float variance = 0.038688779;                      //Uppmätt värde efter 200 samplingar utan Kalman
+  static float varianceProcess = 1e-8;                      //Snabbhet i systemet
   static float Pc = 0.0;
   static float G = 0.0;
   static float P = 1.0;
   static float Xp = 0.0;
   static float Zp = 0.0;
-  static float Xe = 55.0;             //startvärde
+  static float Xe = 55.0;                                   //Startvärde
+
   static const float IN_STRAY_CAP_TO_GND = 24.48;
   static const float IN_CAP_TO_GND  = IN_STRAY_CAP_TO_GND;
-  static const float R_PULLUP = 34.8;  
+  static const float R_PULLUP = 34.8;
   static const int MAX_ADC_VALUE = 1023;
-  while(1)
+
+  while (1)
   {
     pinMode(IN_PIN, INPUT);
     digitalWrite(OUT_PIN, HIGH);
@@ -33,9 +33,8 @@ int moist(bool no_write = 1)
       pinMode(IN_PIN, OUTPUT);
 
       float capacitance = (float)val * IN_CAP_TO_GND / (float)(MAX_ADC_VALUE - val);
-      float humidity=((capacitance-330)/4)+55;
+      float humidity = ((capacitance - 330) / 15) + 55;
 
-      
       //Kalmanprocess
       Pc = P + varianceProcess;
       G = Pc / (Pc + variance);
@@ -43,11 +42,12 @@ int moist(bool no_write = 1)
       Xp = Xe;
       Zp = Xp;
       Xe = G * (humidity - Zp) + Xp;
-      
+
       //Serial.print(F("Capacitance Value = "));
       //Serial.print(capacitance, 3);
       //Serial.print(F(" pF ("));
-      if (no_write == 0){
+
+      if (no_write == 0) {
         Serial.print("\t");
         //Serial.print(val);
         //Serial.print(F(") "));
@@ -73,18 +73,19 @@ int moist(bool no_write = 1)
         t = u2 > u1 ? u2 - u1 : u1 - u2;
       } while ((digVal < 1) && (t < 400000L));
 
-      pinMode(OUT_PIN, INPUT);  
+      pinMode(OUT_PIN, INPUT);
       val = analogRead(OUT_PIN);
       digitalWrite(IN_PIN, HIGH);
       int dischargeTime = (int)(t / 1000L) * 5;
-      delay(dischargeTime);   
-      pinMode(OUT_PIN, OUTPUT);  
+      delay(dischargeTime);
+      pinMode(OUT_PIN, OUTPUT);
       digitalWrite(OUT_PIN, LOW);
       digitalWrite(IN_PIN, LOW);
 
       float capacitance = -(float)t / R_PULLUP
-                              / log(1.0 - (float)val / (float)MAX_ADC_VALUE);
-      if(no_write == 0){
+                          / log(1.0 - (float)val / (float)MAX_ADC_VALUE);
+
+      if (no_write == 0) {
         Serial.print(F("fuktsensor:\t kapacitans ="));
         if (capacitance > 1000.0)
         {
@@ -96,7 +97,7 @@ int moist(bool no_write = 1)
           Serial.print(capacitance, 2);
           Serial.print(F(" nF"));
         }
-  
+
         Serial.print(F(" ("));
         Serial.print(digVal == 1 ? F("Normal") : F("HighVal"));
         Serial.print(F(", t= "));
@@ -109,6 +110,6 @@ int moist(bool no_write = 1)
     }
     while (millis() % 1000 != 0)
       ;
-  }   
+  }
 }
 #endif

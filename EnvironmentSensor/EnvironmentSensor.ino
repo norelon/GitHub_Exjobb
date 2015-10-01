@@ -13,7 +13,7 @@ float tempgas = 0;
 const int antal_odds = 3;
 
 void setup() {
-  Serial.begin(9600); //set baud rate
+  Serial.begin(9600);                       //Sätt baud rate (bit/s)
   Serial.println("Initializing pins");
   pinMode(A0, OUTPUT);                      //A0, volt drop
   pinMode(A1, OUTPUT);                      //A1, volt drop
@@ -46,7 +46,7 @@ void setup() {
   Serial.println("]");*/
   Serial.println("Initializing interrupts");
   attachInterrupt(digitalPinToInterrupt(PIR_PIN), pir, RISING);
-  attachInterrupt(digitalPinToInterrupt(3), inut, RISING);   //initializing inut
+  attachInterrupt(digitalPinToInterrupt(3), inut, FALLING);   //initializing inut
   Serial.println("SETUP COMPLETE");
   Serial.println(" ");
   Serial.println("temp\ttempK\tCO2ppm\tKppm\tljudnu\tljudmin\tfukt\tfuktK\tpir\tantal");
