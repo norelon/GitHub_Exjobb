@@ -3,8 +3,9 @@
 #include "fukt4sensor.h"      //moist();
 #include "Gas_sensor.h"       //gas();
 #include "pirsensor.h"        //pir();
-#include "voltage_check.h"    //volt();
+//#include "voltage_check.h"    //volt();
 #include "loginut.h"          //inut();
+#include "ljussensor.h"       //light();
 
 float temptemp2 = 0;
 float tempgas2 = 0;
@@ -15,8 +16,7 @@ const int antal_odds = 3;
 void setup() {
   Serial.begin(9600);                       //Sätt baud rate (bit/s)
   Serial.println("Initializing pins");
-  pinMode(A0, OUTPUT);                      //A0, volt drop
-  pinMode(A1, OUTPUT);                      //A1, volt drop
+  pinMode(A1, INPUT);                       //A1, ljussensor
   pinMode(IN_PIN, OUTPUT);                  //A2, fukt
   pinMode(OUT_PIN, OUTPUT);                 //A3, fukt
   pinMode(MIC_PIN, INPUT);                  //A4, mikrofon
@@ -49,7 +49,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(3), inut, RISING);   //initializing inut
   Serial.println("SETUP COMPLETE");
   Serial.println(" ");
-  Serial.println("temp\ttempK\tCO2ppm\tKppm\tljudnu\tljudmin\tfukt\tfuktK\tpir\tantal");
+  Serial.println("temp\ttempK\tCO2ppm\tKppm\tljudnu\tljudmin\tfukt\tfuktK\tljus\tpir\tantal");
 }
 
 void loop() {
@@ -75,6 +75,8 @@ void loop() {
   Serial.print("\t");
   Serial.print(microphone_minmaxljud);
   moist(0);
+  Serial.print("\t");
+  Serial.print(light());
   if (pirhigh >= 1) {
     Serial.print("\t");
     Serial.print(pirhigh);
