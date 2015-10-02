@@ -15,8 +15,8 @@ float temperature(int numberofvaliddutycycles = 385, bool no_write = 1) { //Fram
   static int count = 0;
 
   //Kalmanvariabler
-  static float variance = 0.010536689;            //Uppmätt värde efter 100 samplingar utan Kalman
-  static float varianceProcess = 1e-8;            //Snabbhet i systemet
+  static float variance = 0.045168894;            //Uppmätt värde efter 100 samplingar utan Kalman, gammalt 0.010536689
+  static float varianceProcess = 1e-5;            //Snabbhet i systemet
   static float Pc = 0.0;
   static float G = 0.0;
   static float P = 1.0;
@@ -43,7 +43,7 @@ float temperature(int numberofvaliddutycycles = 385, bool no_write = 1) { //Fram
 
     if (count == numberofvaliddutycycles) {                                 //Valda antalet valid duty cycles är inlästa
       totalsum = totalsum / numberofvaliddutycycles;                        //Medelvärdesberäkna procenten hög av alla duty cycles
-      temperature = ((-2.42 * (totalsum * totalsum)) + (215.63 * totalsum) - 68.83); //Temperaturberäkning från datablad
+      temperature = (((-2.42 * (totalsum * totalsum)) + (215.63 * totalsum) - 68.83))-3; //Temperaturberäkning från datablad
 
       //Kalmanprocess
       Pc = P + varianceProcess;

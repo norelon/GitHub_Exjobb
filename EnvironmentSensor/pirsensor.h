@@ -3,7 +3,7 @@
 #include "arduino.h"
 
 byte PIR_PIN = 2;
-int pirhigh = 0;
+volatile int pirhigh = 0;
 
 volatile int isrpir = 0;
 

@@ -20,7 +20,7 @@ float gas(bool no_write = 1) {
   static float ppm = 0;
 
   sensorValue = analogRead(GAS_PIN);            //Läs analoga värdet
-  sensorValue = (sensorValue / 1000) + 0.126;   //Beräkning till V samt kalibrering enligt 350 ppm utomhus
+  sensorValue = (sensorValue / 1000) + 0.095;   //Beräkning till V samt kalibrering enligt 350 ppm utomhus
   ppm = ((sensorValue - 0.33) / 0.000066);      //Uppskattning av formel från V till PPM enligt datablad
 
   //Kalmanprocess

@@ -28,7 +28,7 @@ void setup() {
   pinMode(PWM_PIN, INPUT);                  //D13, temp
   
   Serial.println("Initializing microphone");
-  Serial.print("Loading[");/*
+  Serial.print("Loading[");
   microphone(20000,1);
   for(int i = 0;i < 10;i++){
     Serial.print(".");
@@ -43,10 +43,10 @@ void setup() {
     if(i%5==0) Serial.print(".");
     temperature(385,1);
   }
-  Serial.println("]");*/
+  Serial.println("]");
   Serial.println("Initializing interrupts");
   attachInterrupt(digitalPinToInterrupt(PIR_PIN), pir, RISING);
-  attachInterrupt(digitalPinToInterrupt(3), inut, FALLING);   //initializing inut
+  attachInterrupt(digitalPinToInterrupt(3), inut, RISING);   //initializing inut
   Serial.println("SETUP COMPLETE");
   Serial.println(" ");
   Serial.println("temp\ttempK\tCO2ppm\tKppm\tljudnu\tljudmin\tfukt\tfuktK\tpir\tantal");
@@ -59,7 +59,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   temptemp2 = temptemp;
   tempgas2 = tempgas;
-  for (int i = 0; i < 1; i++) {
+  for (int i = 0; i < 10; i++) {
     if (i % 2 == 0) {
       tempmic = microphone(10000, 1);
       if (tempmic > micodds) micodds = tempmic;
@@ -75,9 +75,14 @@ void loop() {
   Serial.print("\t");
   Serial.print(microphone_minmaxljud);
   moist(0);
-  if (pirhigh >= 1 || PIR_PIN == 1) {
+  if (pirhigh >= 1) {
+    Serial.print("\t");
+    Serial.print(pirhigh);
+    Serial.print("\t");
     pirhigh = 0;
-    Serial.print("\t1\t");
+  }
+  else if( PIR_PIN == 1){
+  Serial.print("\t1\t");
   }
   else {
     Serial.print("\t0\t");
