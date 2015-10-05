@@ -27,7 +27,7 @@ void setup() {
   pinMode(5, INPUT);                        //D5, räknare ut
   pinMode(PWM_PIN, INPUT);                  //D13, temp
   
-  Serial.println("Initializing microphone");
+  /*Serial.println("Initializing microphone");
   Serial.print("Loading[");
   microphone(20000,1);
   for(int i = 0;i < 10;i++){
@@ -44,7 +44,7 @@ void setup() {
     temperature(385,1);
   }
   Serial.println("]");
-  Serial.println("Initializing interrupts");
+  Serial.println("Initializing interrupts");*/
   attachInterrupt(digitalPinToInterrupt(PIR_PIN), pir, RISING);
   attachInterrupt(digitalPinToInterrupt(3), inut, RISING);   //initializing inut
   Serial.println("SETUP COMPLETE");
