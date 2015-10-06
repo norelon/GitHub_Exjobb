@@ -16,13 +16,11 @@ void inut() {
     inut_set = 1;
     inut_out++;
     inut_tot = inut_in - inut_out;
-    delay(50);
   }
   if ((digitalRead(4) == HIGH) && (inut_set == 0)) {
     inut_set = 1;
     inut_in++;
     inut_tot = inut_in - inut_out;
-    delay(50);
   }
 
   inut_set = 0;

@@ -33,7 +33,7 @@ int moist(bool no_write = 1)
       pinMode(IN_PIN, OUTPUT);
 
       float capacitance = (float)val * IN_CAP_TO_GND / (float)(MAX_ADC_VALUE - val);
-      float humidity = ((capacitance - 330) / 15) + 55;
+      float humidity = ((capacitance - 330) / 30) + 55;
 
       //Kalmanprocess
       Pc = P + varianceProcess;
@@ -51,7 +51,7 @@ int moist(bool no_write = 1)
         Serial.print("\t");
         //Serial.print(val);
         //Serial.print(F(") "));
-        Serial.print(humidity);
+        Serial.print(capacitance);
         Serial.print("\t");
         Serial.print(Xe);
       }
