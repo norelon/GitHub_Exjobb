@@ -6,15 +6,21 @@
 //#include "voltage_check.h"    //volt();
 #include "loginut.h"          //inut();
 #include "ljussensor.h"       //light();
+#include <SoftwareSerial.h>
+#include "ESP8266.h"          //esp_8266(float temperature = 0, float co2 = 0, float ljud = 0, float fukt = 0,float ljus = 0,int pir = 0,int antal = 0);
 
 float temptemp2 = 0;
 float tempgas2 = 0;
 float temptemp = 0;
 float tempgas = 0;
+int temppir = 0;
+float tempmoist = 0;
+float templight = 0;
 const int antal_odds = 3;
 
 void setup() {
-  Serial.begin(9600);                       //Sätt baud rate (bit/s)
+  ser.begin(115200);                       //Sätt baud rate (bit/s)
+  ser.println("AT+RST");
   Serial.println("Initializing pins");
   pinMode(A1, INPUT);                       //A1, ljussensor
   pinMode(IN_PIN, OUTPUT);                  //A2, fukt
@@ -74,49 +80,26 @@ void loop() {
   Serial.print(micodds);
   Serial.print("\t");
   Serial.print(microphone_minmaxljud);
-  moist(0);
+  tempmoist = moist(0);
   Serial.print("\t");
-  Serial.print(light());
+  templight = light(); 
+  Serial.print(templight);
   if (pirhigh >= 1) {
     Serial.print("\t");
     Serial.print(pirhigh);
     Serial.print("\t");
+    temppir = pirhigh;
     pirhigh = 0;
   }
   else if( PIR_PIN == 1){
-  Serial.print("\t1\t");
+    Serial.print("\t1\t");
+    temppir = 1;
   }
   else {
+    temppir = 0;
     Serial.print("\t0\t");
   }
   Serial.println(inut_tot);
-  /*if (tempmic >= 0.95) print_odds(tempmic);
-  else if(pirhigh >= 1 || PIR_PIN == 1)
-  {
-    pirhigh = 0;
-    print_odds(0.95);
-  }
-  else if (micodds > 0.25) print_odds(micodds);
-  else if (temptemp2 < temptemp && (tempgas2/10) < (tempgas/10)) print_odds(0.25);
-  else print_odds(micodds);*/
-}
-
-void print_odds(float nuodds)
-{
-  static float odds[antal_odds];
-  static float odds_sum = 0;
-  float tempfloat = 0;
-  odds[antal_odds] = nuodds;
-  for (int i = 0; i < antal_odds; i++)
-  {
-    odds[i] = odds[i + 1];
-    odds_sum = odds_sum + odds[i];
-    Serial.print(odds[i]);
-    Serial.print(" ");
-  }
-  tempfloat = antal_odds;
-  Serial.print(" ;");
-  Serial.println(odds_sum / tempfloat);
-  odds_sum = 0;
+  esp_8266(temptemp, tempgas, microphone_minmaxljud, tempmoist,templight,temppir,inut_tot);
 }
 
