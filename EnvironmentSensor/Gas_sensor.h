@@ -14,7 +14,7 @@ float gas(bool no_write = 1) {
   static float P = 1.0;
   static float Xp = 0.0;
   static float Zp = 0.0;
-  static float Xe = 400.0;                      //Startvärde
+  
 
   static float sensorValue = 0;
   static float ppm = 0;
@@ -22,7 +22,7 @@ float gas(bool no_write = 1) {
   sensorValue = analogRead(GAS_PIN);            //Läs analoga värdet
   sensorValue = (sensorValue / 1000) + 0.175;   //Beräkning till V samt kalibrering enligt 350 ppm utomhus
   ppm = ((sensorValue - 0.33) / 0.000066);      //Uppskattning av formel från V till PPM enligt datablad
-
+  static float Xe = ppm;                      //Startvärde kalman
   //Kalmanprocess
   Pc = P + varianceProcess;
   G = Pc / (Pc + variance);
