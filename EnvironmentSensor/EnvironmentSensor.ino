@@ -19,8 +19,7 @@ float templight = 0;
 const int antal_odds = 3;
 
 void setup() {
-  ser.begin(115200);                       //Sätt baud rate (bit/s)
-  ser.println("AT+RST");
+  //Serial.begin(115200);                   //funkar inte med ser.begin() serial tar över?
   Serial.println("Initializing pins");
   pinMode(A1, INPUT);                       //A1, ljussensor
   pinMode(IN_PIN, OUTPUT);                  //A2, fukt
@@ -31,26 +30,31 @@ void setup() {
   pinMode(3, INPUT);                        //D3, räknare interrupt
   pinMode(4, INPUT);                        //D4, räknare in
   pinMode(5, INPUT);                        //D5, räknare ut
+  pinMode(ESP_RST, OUTPUT);                  //D8, esp reset pin
   pinMode(PWM_PIN, INPUT);                  //D13, temp
-  
-  /*Serial.println("Initializing microphone");
-  Serial.print("Loading[");
-  microphone(20000,1);
-  for(int i = 0;i < 10;i++){
-    Serial.print(".");
-    microphone(10000,1);
-  }
-  microphone(5000,1);
-  microphone(5000,1);
-  Serial.println("]");
+  Serial.println("Initializing ESP8266");
+  ser.begin(115200);                        //Sätt baud rate (bit/s)
+  ser.println("AT+RST");                    //ESPsoftware reset
+  Serial.println("Initializing microphone");
+  Serial.print("Loading[..");
+  microphone(20000, 1);
+  Serial.print("....");
+  microphone(5000, 1);
+  Serial.print("..");
+  microphone(5000, 1);
+  Serial.println("..]");
   Serial.println("Initializing Temperature sensor");
   Serial.print("Loading[");
-  for(int i = 0;i < 50;i++){
-    if(i%5==0) Serial.print(".");
-    temperature(385,1);
+  unsigned long tid = millis();
+  const int antali = 10;
+  for (int i = 0; i < antali; i++) {
+    if (i % (antali/10) == 0) Serial.print(".");
+    temperature(385, 1);
   }
   Serial.println("]");
-  Serial.println("Initializing interrupts");*/
+  unsigned long tid2 = millis();
+  Serial.println((tid-tid2));
+  Serial.println("Initializing interrupts");
   attachInterrupt(digitalPinToInterrupt(PIR_PIN), pir, RISING);
   attachInterrupt(digitalPinToInterrupt(3), inut, RISING);   //initializing inut
   Serial.println("SETUP COMPLETE");
@@ -66,6 +70,7 @@ void loop() {
   temptemp2 = temptemp;
   tempgas2 = tempgas;
   for (int i = 0; i < 10; i++) {
+    if(i == 3) esp_reset();     //för stabilitet på internet uppkopplingen placerades här för att få en effektiv delay.
     if (i % 2 == 0) {
       tempmic = microphone(10000, 1);
       if (tempmic > micodds) micodds = tempmic;
@@ -82,7 +87,7 @@ void loop() {
   Serial.print(microphone_minmaxljud);
   tempmoist = moist(0);
   Serial.print("\t");
-  templight = light(); 
+  templight = light();
   Serial.print(templight);
   if (pirhigh >= 1) {
     Serial.print("\t");
@@ -91,7 +96,7 @@ void loop() {
     temppir = pirhigh;
     pirhigh = 0;
   }
-  else if( PIR_PIN == 1){
+  else if ( PIR_PIN == 1) {
     Serial.print("\t1\t");
     temppir = 1;
   }
@@ -100,6 +105,6 @@ void loop() {
     Serial.print("\t0\t");
   }
   Serial.println(inut_tot);
-  esp_8266(temptemp, tempgas, microphone_minmaxljud, tempmoist,templight,temppir,inut_tot);
+  esp_8266(temptemp, tempgas, micodds, tempmoist, templight, temppir, inut_tot);
 }
 

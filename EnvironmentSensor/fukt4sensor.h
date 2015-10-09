@@ -55,7 +55,7 @@ int moist(bool no_write = 1)
         Serial.print("\t");
         Serial.print(Xe);
       }
-      return Xe;
+      return capacitance;
     }
     else
     {
