@@ -14,13 +14,15 @@ void inut() {
 
   if ((digitalRead(5) == HIGH) && (inut_set == 0)) {
     inut_set = 1;
-    inut_out++;
-    inut_tot = inut_in - inut_out;
+    //inut_out++;
+    //inut_tot = inut_in - inut_out;
+    inut_tot--;
   }
   if ((digitalRead(4) == HIGH) && (inut_set == 0)) {
     inut_set = 1;
-    inut_in++;
-    inut_tot = inut_in - inut_out;
+    inut_tot++;
+    //inut_in++;
+    //inut_tot = inut_in - inut_out;
   }
 
   inut_set = 0;

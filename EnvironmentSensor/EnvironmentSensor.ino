@@ -39,21 +39,18 @@ void setup() {
   Serial.print("Loading[..");
   microphone(20000, 1);
   Serial.print("....");
-  microphone(5000, 1);
+  microphone(10000, 1);
   Serial.print("..");
-  microphone(5000, 1);
+  microphone(10000, 1);
   Serial.println("..]");
   Serial.println("Initializing Temperature sensor");
   Serial.print("Loading[");
-  unsigned long tid = millis();
   const int antali = 10;
   for (int i = 0; i < antali; i++) {
     if (i % (antali/10) == 0) Serial.print(".");
     temperature(385, 1);
   }
   Serial.println("]");
-  unsigned long tid2 = millis();
-  Serial.println((tid-tid2));
   Serial.println("Initializing interrupts");
   attachInterrupt(digitalPinToInterrupt(PIR_PIN), pir, RISING);
   attachInterrupt(digitalPinToInterrupt(3), inut, RISING);   //initializing inut
@@ -64,21 +61,25 @@ void setup() {
 
 void loop() {
   int temp = 0;
+  
   float tempmic = 0;
   float micodds = 0;
+ 
   // put your main code here, to run repeatedly:
   temptemp2 = temptemp;
   tempgas2 = tempgas;
-  for (int i = 0; i < 10; i++) {
+  const int antal_loop = 10;
+  tempmic=0;
+  for (int i = 0; i < antal_loop; i++) {
     if(i == 3) esp_reset();     //för stabilitet på internet uppkopplingen placerades här för att få en effektiv delay.
     if (i % 2 == 0) {
-      tempmic = microphone(10000, 1);
-      if (tempmic > micodds) micodds = tempmic;
+      tempmic += microphone(10000, 1);
     }
     gas(1);
     moist(1);
     temperature(385, 1);
   }
+  micodds = tempmic/(antal_loop/2);
   temptemp = temperature(385, 0);
   tempgas = gas(0);
   Serial.print("\t");

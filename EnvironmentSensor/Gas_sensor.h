@@ -15,7 +15,6 @@ float gas(bool no_write = 1) {
   static float Xp = 0.0;
   static float Zp = 0.0;
   
-
   static float sensorValue = 0;
   static float ppm = 0;
 

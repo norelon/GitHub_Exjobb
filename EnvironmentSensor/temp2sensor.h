@@ -5,14 +5,14 @@
 byte PWM_PIN = 13;                                  //Deklarerar ingång för tempsensor
 
 float temperature(int numberofvaliddutycycles = 385, bool no_write = 1) { //Framtestat stabilitetsvärde
-  static float pwm_high;
-  static float pwm_low;
-  static float dutycycle = 0;
-  static float sumdutycycle = 0;
-  static float temperature = 0;
-  static float validdutycycle = 0;
-  static float totalsum = 0;
-  static int count = 0;
+  float pwm_high;
+  float pwm_low;
+  float dutycycle = 0;
+  float sumdutycycle = 0;
+  float temperature = 0;
+  float validdutycycle = 0;
+  float totalsum = 0;
+  unsigned int count = 0;
 
   //Kalmanvariabler
   static float variance = 0.045168894;            //Uppmätt värde efter 100 samplingar utan Kalman, gammalt 0.010536689
@@ -58,6 +58,17 @@ float temperature(int numberofvaliddutycycles = 385, bool no_write = 1) { //Fram
         Serial.print(temperature);        //Skriver temperaturen i monitorn
         Serial.print("\t");
         Serial.print(Xe);                 //Skriver Kalmantemperaturen i monitorn
+        /*Serial.print(" Pc:");
+        Serial.print(Pc);
+        Serial.print(" G:");
+        Serial.print(G);
+        Serial.print(" P:");
+        Serial.print(P);
+        Serial.print(" Xp:");
+        Serial.print(Xp);
+        Serial.print(" Zp:");
+        Serial.println(Zp);*/
+        
       }
       totalsum = 0;
       count = 0;
