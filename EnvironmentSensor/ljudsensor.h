@@ -5,12 +5,20 @@
 byte MIC_PIN = 4;                                         //Deklarerar ingång för tempsensor
 
 float microphone_minmaxljud = 1023;                       //Variabel för att hitta tyst
-
+float microphone_Xe = 600;                                   //Startvärde
 float microphone(int trackmax = 10000, bool no_write = 1)
 {
-  const float microphone_tyst = 585;                      //Högsta uppmätta värdet, då rummet är tyst
-  const float microphone_prat = 600;                      //Uppmätt värde, för tal i rummet (det viktiga är prat/tyst)
+  static float variance = 82.16035311;                      //Uppmätt värde efter 200 samplingar utan Kalman
+  static float varianceProcess = 1e-4;                      //Snabbhet i systemet
+  static float Pc = 0.0;
+  static float G = 0.0;
+  static float P = 1.0;
+  static float Xp = 0.0;
+  static float Zp = 0.0;
 
+  
+  const float microphone_tyst = 570;                      //Högsta uppmätta värdet, då rummet är tyst
+  const float microphone_prat = 600;                      //Uppmätt värde, för tal i rummet (det viktiga är prat/tyst)
   static float microphone_maxljud    = 0;                 //Sätt till litet
   static float microphone_minimum    = 1023;              //Sätt till stort
   static unsigned int count_ja = 0;
@@ -33,7 +41,17 @@ float microphone(int trackmax = 10000, bool no_write = 1)
       track = 0; //set back track to zero
       if (microphone_numax < microphone_minmaxljud && microphone_numax > (microphone_maxljud * 0.55)
           && microphone_minimum < microphone_minmaxljud) microphone_minmaxljud = microphone_numax;
+      
+      //Kalmanprocess
+      Pc = P + varianceProcess;
+      G = Pc / (Pc + variance);
+      P = (1 - G) * Pc;
+      Xp = microphone_Xe;
+      Zp = Xp;
+      microphone_Xe = G * (microphone_numax - Zp) + Xp;
+      
       return microphone_numax;
+      
       /*if (microphone_numax < microphone_minmaxljud*(microphone_prat/microphone_tyst)){
             if(no_write == 0)
             {

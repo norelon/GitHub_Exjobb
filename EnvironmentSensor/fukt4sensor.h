@@ -8,7 +8,7 @@ const int OUT_PIN = A3;
 int moist(bool no_write = 1)
 {
   static float variance = 0.038688779;                      //Uppmätt värde efter 200 samplingar utan Kalman
-  static float varianceProcess = 1e-8;                      //Snabbhet i systemet
+  static float varianceProcess = 1e-4;                      //Snabbhet i systemet
   static float Pc = 0.0;
   static float G = 0.0;
   static float P = 1.0;

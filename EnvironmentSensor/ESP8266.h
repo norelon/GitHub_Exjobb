@@ -21,13 +21,7 @@ void esp_8266(float temperature = 0, float co2 = 0, float ljud = 0, float fukt =
 {
   float sample = 0;
   const String apiKey   = "GD1CU4S6T3BEERF8";//"FSF6ZFHK4EULF367";
-  const String name_ssid = "CCGuest";
-  const String password = "+1cyber!";
-  //don't connect if you can't read and write.
-  /*ser.println("AT+CIPMUX=1");
-  delay(5);
-  ser.println("AT+CWMODE=3");
-  delay(5);*/
+
   // TCP connection
   String cmd = "AT+CIPSTART=\"TCP\",\"";
   cmd += "184.106.153.149"; // api.thingspeak.com
@@ -51,7 +45,7 @@ void esp_8266(float temperature = 0, float co2 = 0, float ljud = 0, float fukt =
   getStr += "&field2=";
   getStr += String(co2);
   getStr += "&field3=";
-  getStr += String(ljud);
+  getStr += String(microphone_Xe);
   getStr += "&field4=";
   getStr += String(fukt);
   getStr += "&field5=";
@@ -60,6 +54,8 @@ void esp_8266(float temperature = 0, float co2 = 0, float ljud = 0, float fukt =
   getStr += String(pir);
   getStr += "&field7=";
   getStr += String(antal);
+  getStr += "&field8=";
+  getStr += String(ljud);
   getStr += "\r\n\r\n";
 
   // send data length

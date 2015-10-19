@@ -7,6 +7,7 @@
 #include "loginut.h"          //inut();
 #include "ljussensor.h"       //light();
 #include <SoftwareSerial.h>
+#include "odds.h"
 #include "ESP8266.h"          //esp_8266(float temperature = 0, float co2 = 0, float ljud = 0, float fukt = 0,float ljus = 0,int pir = 0,int antal = 0);
 
 float temptemp2 = 0;
@@ -19,7 +20,7 @@ float templight = 0;
 const int antal_odds = 3;
 
 void setup() {
-  //Serial.begin(115200);                   //funkar inte med ser.begin() serial tar över?
+  Serial.begin(115200);                   //funkar inte med ser.begin() serial tar över?
   Serial.println("Initializing pins");
   pinMode(A1, INPUT);                       //A1, ljussensor
   pinMode(IN_PIN, OUTPUT);                  //A2, fukt
@@ -36,7 +37,7 @@ void setup() {
   ser.begin(115200);                        //Sätt baud rate (bit/s)
   ser.println("AT+RST");                    //ESPsoftware reset
   Serial.println("Initializing microphone");
-  Serial.print("Loading[..");
+  /*Serial.print("Loading[..");
   microphone(20000, 1);
   Serial.print("....");
   microphone(10000, 1);
@@ -50,7 +51,7 @@ void setup() {
     if (i % (antali/10) == 0) Serial.print(".");
     temperature(385, 1);
   }
-  Serial.println("]");
+  Serial.println("]");*/
   Serial.println("Initializing interrupts");
   attachInterrupt(digitalPinToInterrupt(PIR_PIN), pir, RISING);
   attachInterrupt(digitalPinToInterrupt(3), inut, RISING);   //initializing inut
@@ -68,24 +69,23 @@ void loop() {
   // put your main code here, to run repeatedly:
   temptemp2 = temptemp;
   tempgas2 = tempgas;
-  const int antal_loop = 10;
+  const int antal_loop = 5;
   tempmic=0;
   for (int i = 0; i < antal_loop; i++) {
     if(i == 3) esp_reset();     //för stabilitet på internet uppkopplingen placerades här för att få en effektiv delay.
-    if (i % 2 == 0) {
-      tempmic += microphone(10000, 1);
-    }
-    gas(1);
-    moist(1);
+    //tempmic = microphone(10000, 1);
+    //if (tempmic > micodds) micodds = tempmic; // letar efter peakvärden, då händelser är mest intressanta
+    //gas(1);
+    //moist(1);
     temperature(385, 1);
   }
-  micodds = tempmic/(antal_loop/2);
+  //micodds = tempmic/(antal_loop);
   temptemp = temperature(385, 0);
   tempgas = gas(0);
   Serial.print("\t");
   Serial.print(micodds);
   Serial.print("\t");
-  Serial.print(microphone_minmaxljud);
+  Serial.print(microphone_Xe);
   tempmoist = moist(0);
   Serial.print("\t");
   templight = light();
@@ -106,6 +106,7 @@ void loop() {
     Serial.print("\t0\t");
   }
   Serial.println(inut_tot);
+  odds(temppir,temptemp);
   esp_8266(temptemp, tempgas, micodds, tempmoist, templight, temppir, inut_tot);
 }
 
