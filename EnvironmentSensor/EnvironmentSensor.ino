@@ -65,6 +65,7 @@ void loop() {
   
   float tempmic = 0;
   float micodds = 0;
+  float chance    = 0;
  
   // put your main code here, to run repeatedly:
   temptemp2 = temptemp;
@@ -106,7 +107,7 @@ void loop() {
     Serial.print("\t0\t");
   }
   Serial.println(inut_tot);
-  odds(temppir,temptemp);
-  esp_8266(temptemp, tempgas, micodds, tempmoist, templight, temppir, inut_tot);
+  chance = odds(temppir,temptemp);
+  esp_8266(temptemp, tempgas, micodds, tempmoist, templight, temppir, inut_tot, chance);
 }
 

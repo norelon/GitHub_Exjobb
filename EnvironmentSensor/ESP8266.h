@@ -17,7 +17,7 @@ void esp_reset()
   digitalWrite(ESP_RST, HIGH);
 }
 
-void esp_8266(float temperature = 0, float co2 = 0, float ljud = 0, float fukt = 0, float ljus = 0, int pir = 0, int antal = 0)
+void esp_8266(float temperature = 0, float co2 = 0, float ljud = 0, float fukt = 0, float ljus = 0, int pir = 0, int antal = 0,float odds = 0)
 {
   float sample = 0;
   const String apiKey   = "GD1CU4S6T3BEERF8";//"FSF6ZFHK4EULF367";
@@ -45,7 +45,7 @@ void esp_8266(float temperature = 0, float co2 = 0, float ljud = 0, float fukt =
   getStr += "&field2=";
   getStr += String(co2);
   getStr += "&field3=";
-  getStr += String(microphone_Xe);
+  getStr += String(ljud);
   getStr += "&field4=";
   getStr += String(fukt);
   getStr += "&field5=";
@@ -55,7 +55,7 @@ void esp_8266(float temperature = 0, float co2 = 0, float ljud = 0, float fukt =
   getStr += "&field7=";
   getStr += String(antal);
   getStr += "&field8=";
-  getStr += String(ljud);
+  getStr += String(odds);
   getStr += "\r\n\r\n";
 
   // send data length
