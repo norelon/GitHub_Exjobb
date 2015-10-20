@@ -74,10 +74,10 @@ void loop() {
   tempmic=0;
   for (int i = 0; i < antal_loop; i++) {
     if(i == 3) esp_reset();     //för stabilitet på internet uppkopplingen placerades här för att få en effektiv delay.
-    //tempmic = microphone(10000, 1);
-    //if (tempmic > micodds) micodds = tempmic; // letar efter peakvärden, då händelser är mest intressanta
-    //gas(1);
-    //moist(1);
+    tempmic = microphone(10000, 1);
+    if (tempmic > micodds) micodds = tempmic; // letar efter peakvärden, då händelser är mest intressanta
+    gas(1);
+    moist(1);
     temperature(385, 1);
   }
   //micodds = tempmic/(antal_loop);
@@ -107,7 +107,7 @@ void loop() {
     Serial.print("\t0\t");
   }
   Serial.println(inut_tot);
-  chance = odds(temppir,temptemp);
+  chance = odds(temppir,temptemp,tempgas,micodds);
   esp_8266(temptemp, tempgas, micodds, tempmoist, templight, temppir, inut_tot, chance);
 }
 

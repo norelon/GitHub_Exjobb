@@ -2,31 +2,36 @@
 #define odds_h
 #include "arduino.h"
 
-float odds(int pir, float temperatur, float co2 = 0, int ljud = 0, float ljus = 0)
+float odds(int pir, float temperatur, float co2, float ljud, float ljus = 0)
 {
     const int use_temp = 1;                  //antalsample innan temperaturen räknas 
     
     //viktning samt statisktiskt undersökt data för de olika sensorerna.
     const float odds_there = 0.108;      //totalt att någon är där
     
-    const float pir_max_odds = 1;       //gissar rätt om nån är där
-    const float pir_miss_odds = 0.3571; //(25/70)låter bli att gissa att nån är där.    
-    const float pir_odds_high = pir_max_odds;
-    const float pir_odds_low = 0.001;   //oddsen att det är någon där om den är låg
+    const float pir_odds_there = 1;      //oddsen att någon är där vid detektion
+    const float pir_odds_not = 0.3913;   //oddsen att det är någon där då det inte är detektion
     float pir_weight = 1;
     float pir_odds = 0;
 
-    const float temp_odds_up = 0.8571;    //(60/70)odds att den går upp om nån är där ()
-    const float temp_odds_upno = 0.0346;  //(20/578)odds att den går upp om ingen är där
-    const float temp_odds_down = 0;       //ner med närvaro händer aldrig.
-    const float temp_odds_downno = 0.3287;     //odds att den går ner om ingen är där
-    const float temp_odds_still = 0.1415; //odds att den står stilla om någon är där 0.1415
-    const float temp_odds_stillno = 0.6367;
+    const float ljud_odds_there = 0.9711;      //oddsen att någon är där vid detektion
+    const float ljud_odds_not = 0.4857;   //oddsen att det är någon där då det inte är detektion
+    float ljud_weight = 1;
+    float ljud_odds = 0;
+
+    const float temp_odds_up = 0.9612;     //odds att den går upp om nån är där
+    const float temp_odds_still = 0.1833;  //odds att den står stilla om någon är där 0.1415
+    const float temp_odds_down = 0;        //ner med närvaro händer aldrig.
     float temp_weight = 0;    //litar vi på den?
-    const float temp_adjust = 20;
     float temp_odds = 0;
     static float temp_old = 0;
-    bool temp_left = 0;
+   
+    const float co2_odds_up = 0.5761;     //odds att den går upp om nån är där
+    const float co2_odds_down = 0.1840;        //ner med närvaro händer aldrig.
+    float co2_weight = 0;    //litar vi på den?
+    float co2_odds = 0;
+    static float co2_old = 0;
+    
     static float total_odds = 0;
     
     
@@ -35,43 +40,58 @@ float odds(int pir, float temperatur, float co2 = 0, int ljud = 0, float ljus = 
     if(counter < use_temp){
       counter++;
       temp_weight = 0;    //litar vi på den?
+      co2_weight = 0;    //litar vi på den?
     }
     else{
-      float tempval = temp_adjust*(temperatur-temp_old);
+      //beräknar data för temperatur sensorn
+      float tempval = (temperatur-temp_old);
       temp_old = temperatur;
       if (tempval < 0){
         temp_odds = temp_odds_down;
-        temp_weight = (1-temp_odds_downno);
+        temp_weight = 1;
       }
-      else if ((temp_weight+tempval) >= (1-temp_odds_upno)){
-        temp_odds = temp_odds_up;
-        temp_weight = (1-temp_odds_upno);
-      }
-      else if(tempval >= temp_odds_still){
-        temp_weight += tempval;
+      else if(tempval >= 0.01){
+        temp_weight = 1;
         temp_odds = temp_odds_up;
       }
-      /*else if ((temp_weight+tempval) >= (1-temp_odds_stillno)){
-       temp_odds = temp_odds_still;
-       temp_weight += tempval;
-      }*/
+
       else{
        temp_odds = temp_odds_still;
-       temp_weight = (1-(temp_odds_stillno));
+       temp_weight = 1;
+      }
+
+      //beräknar odds för co2
+      float co2val = (temperatur-temp_old);
+      co2_weight = 1;
+      co2_old = co2;
+      if (tempval < 0){
+        co2_odds = co2_odds_down;
+      }
+      else{
+       co2_odds = co2_odds_up;
       }
     }
-    
+
+    //ljud sensor odds
+    if (ljud > 730){//(730/630)*microphone_Xe)
+      ljud_odds = ljud_odds_there;
+      ljud_weight = 1;
+    }
+    else{
+      ljud_odds = ljud_odds_not;
+      ljud_weight = 1;
+    }
 
     if(pir >= 1){
-      pir_weight = pir_max_odds;
-      pir_odds = pir_odds_high;
+      pir_weight = 1;
+      pir_odds = pir_odds_there;
     }
     else {
-      pir_weight = pir_miss_odds;
-      pir_odds = pir_odds_low;
+      pir_weight = 1;
+      pir_odds = pir_odds_not;
     }
     
-    total_odds = ((pir_odds*pir_weight + temp_odds*temp_weight)/(pir_weight+temp_weight));
+    total_odds = ((pir_odds*pir_weight + temp_odds*temp_weight+ co2_odds*co2_weight+ljud_odds*ljud_weight)/(ljud_weight+co2_weight+pir_weight+temp_weight));
     if (total_odds > 1){
       
       Serial.print("total_odds för stor:");
@@ -83,8 +103,11 @@ float odds(int pir, float temperatur, float co2 = 0, int ljud = 0, float ljus = 
       Serial.println("total_odds negativ");
     }
 
-    
-    Serial.print("temp:");
+    Serial.print("co2:");
+    Serial.print(co2_odds);
+    Serial.print("\tljud:");
+    Serial.print(ljud_odds);
+    Serial.print("\ttemp:");
     Serial.print(temp_odds);
     Serial.print("\tpir:");
     Serial.println(pir_odds);
