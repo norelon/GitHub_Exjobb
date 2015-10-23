@@ -9,6 +9,7 @@
 #include <SoftwareSerial.h>
 #include "odds.h"
 #include "ESP8266.h"          //esp_8266(float temperature = 0, float co2 = 0, float ljud = 0, float fukt = 0,float ljus = 0,int pir = 0,int antal = 0);
+#include "Sleep_n0m1.h"       //external sleep library.
 
 float temptemp2 = 0;
 float tempgas2 = 0;
@@ -18,6 +19,9 @@ int temppir = 0;
 float tempmoist = 0;
 float templight = 0;
 const int antal_odds = 3;
+
+Sleep sleep;             //sleep class
+unsigned long sleepTime = 900000; //how long you want the arduino to sleep ~15 min
 
 void setup() {
   Serial.begin(115200);                   //funkar inte med ser.begin() serial tar över?
@@ -31,19 +35,11 @@ void setup() {
   pinMode(3, INPUT);                        //D3, räknare interrupt
   pinMode(4, INPUT);                        //D4, räknare in
   pinMode(5, INPUT);                        //D5, räknare ut
-  pinMode(ESP_RST, OUTPUT);                  //D8, esp reset pin
+  pinMode(ESP_RST, OUTPUT);                 //D8, esp reset pin
   pinMode(PWM_PIN, INPUT);                  //D13, temp
   Serial.println("Initializing ESP8266");
   ser.begin(115200);                        //Sätt baud rate (bit/s)
   ser.println("AT+RST");                    //ESPsoftware reset
-  Serial.println("Initializing microphone");
-  /*Serial.print("Loading[..");
-  microphone(20000, 1);
-  Serial.print("....");
-  microphone(10000, 1);
-  Serial.print("..");
-  microphone(10000, 1);
-  Serial.println("..]");
   Serial.println("Initializing Temperature sensor");
   Serial.print("Loading[");
   const int antali = 10;
@@ -51,7 +47,7 @@ void setup() {
     if (i % (antali/10) == 0) Serial.print(".");
     temperature(385, 1);
   }
-  Serial.println("]");*/
+  Serial.println("]");
   Serial.println("Initializing interrupts");
   attachInterrupt(digitalPinToInterrupt(PIR_PIN), pir, RISING);
   attachInterrupt(digitalPinToInterrupt(3), inut, RISING);   //initializing inut
@@ -66,16 +62,18 @@ void loop() {
   float tempmic = 0;
   float micodds = 0;
   float chance    = 0;
+  static unsigned int sleep_counter = 0;
  
   // put your main code here, to run repeatedly:
   temptemp2 = temptemp;
   tempgas2 = tempgas;
-  const int antal_loop = 5;
+  const int antal_loop = 10; //bör vara större än 5
   tempmic=0;
-  for (int i = 0; i < antal_loop; i++) {
-    if(i == 3) esp_reset();     //för stabilitet på internet uppkopplingen placerades här för att få en effektiv delay.
+  for (int i = 0; i < antal_loop; i++) {              //kör ett flertalgånger för att få stabilare värden med kalman.
+    if(i == 3) digitalWrite(ESP_RST, LOW);            //spara stöm genom att stänga av ESP8266, för stabilitet på internet uppkopplingen placerades den här för att få en effektiv delay.
+    if(i == antal_loop-2) digitalWrite(ESP_RST, HIGH);//startar upp ESP8266 lite i förväg för att försäkra att den hinner starta.
     tempmic = microphone(10000, 1);
-    if (tempmic > micodds) micodds = tempmic; // letar efter peakvärden, då händelser är mest intressanta
+    if (tempmic > micodds) micodds = tempmic;         // sparar största peakvärdet
     gas(1);
     moist(1);
     temperature(385, 1);
@@ -107,7 +105,21 @@ void loop() {
     Serial.print("\t0\t");
   }
   Serial.println(inut_tot);
-  chance = odds(temppir,temptemp,tempgas,micodds);
-  esp_8266(temptemp, tempgas, micodds, tempmoist, templight, temppir, inut_tot, chance);
+  chance = odds(temppir,temptemp,tempgas,micodds,templight);    //beräknar sannolikheten att någon är i rummet
+  
+  esp_8266(temptemp, tempgas, micodds, tempmoist, templight, temppir, inut_tot, chance);  // skickar data till thingspeak
+  
+  if(chance < 0.3 && temppir == 0) sleep_counter++;    // 26.53 väldigt väldigt låg odds.
+  else sleep_counter = 0;
+  if(sleep_counter >= 5){                              //går i sleep mode tills interrupt påträffas, om det är över 5 med väldigt låg odds
+      Serial.println("--Sleep mode--");
+      digitalWrite(ESP_RST, LOW);
+      delay(100);
+      sleep_counter = 0;
+      sleep.pwrDownMode();                            //set sleep mode
+      sleep.sleepInterrupt(1,RISING);
+      digitalWrite(ESP_RST, HIGH);
+      Serial.println("--Normal mode--");
+  }
 }
 
