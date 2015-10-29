@@ -3,7 +3,6 @@
 #include "fukt4sensor.h"      //moist();
 #include "Gas_sensor.h"       //gas();
 #include "pirsensor.h"        //pir();
-//#include "voltage_check.h"    //volt();
 #include "loginut.h"          //inut();
 #include "ljussensor.h"       //light();
 #include <SoftwareSerial.h>
@@ -11,8 +10,6 @@
 #include "ESP8266.h"          //esp_8266(float temperature = 0, float co2 = 0, float ljud = 0, float fukt = 0,float ljus = 0,int pir = 0,int antal = 0);
 #include "Sleep_n0m1.h"       //external sleep library.
 
-float temptemp2 = 0;
-float tempgas2 = 0;
 float temptemp = 0;
 float tempgas = 0;
 int temppir = 0;
@@ -20,8 +17,7 @@ float tempmoist = 0;
 float templight = 0;
 const int antal_odds = 3;
 
-Sleep sleep;             //sleep class
-unsigned long sleepTime = 900000; //how long you want the arduino to sleep ~15 min
+Sleep sleep;                  //sleep class
 
 void setup() {
   Serial.begin(115200);                   //funkar inte med ser.begin() serial tar över?
@@ -64,9 +60,6 @@ void loop() {
   float chance    = 0;
   static unsigned int sleep_counter = 0;
  
-  // put your main code here, to run repeatedly:
-  temptemp2 = temptemp;
-  tempgas2 = tempgas;
   const int antal_loop = 10; //bör vara större än 5
   tempmic=0;
   for (int i = 0; i < antal_loop; i++) {              //kör ett flertalgånger för att få stabilare värden med kalman.
@@ -78,7 +71,6 @@ void loop() {
     moist(1);
     temperature(385, 1);
   }
-  //micodds = tempmic/(antal_loop);
   temptemp = temperature(385, 0);
   tempgas = gas(0);
   Serial.print("\t");
@@ -105,13 +97,13 @@ void loop() {
     Serial.print("\t0\t");
   }
   Serial.println(inut_tot);
-  chance = odds(temppir,temptemp,tempgas,micodds,templight);    //beräknar sannolikheten att någon är i rummet
+  chance = odds(temppir,temptemp,tempgas,micodds,templight); //beräknar sannolikheten att någon är i rummet
   
   esp_8266(temptemp, tempgas, micodds, tempmoist, templight, temppir, inut_tot, chance);  // skickar data till thingspeak
   
-  if(chance < 0.3 && temppir == 0) sleep_counter++;    // 26.53 väldigt väldigt låg odds.
+  if(chance < 0.3 && temppir == 0) sleep_counter++;   // 26.53 väldigt väldigt låg odds.
   else sleep_counter = 0;
-  if(sleep_counter >= 5){                              //går i sleep mode tills interrupt påträffas, om det är över 5 med väldigt låg odds
+  if(sleep_counter >= 5){                             //går i sleep mode tills interrupt påträffas
       Serial.println("--Sleep mode--");
       digitalWrite(ESP_RST, LOW);
       delay(100);

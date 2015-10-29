@@ -12,7 +12,7 @@ SoftwareSerial ser(1, 0); // RX, TX
 
 void esp_reset()
 {
-  digitalWrite(ESP_RST, LOW);
+  digitalWrite(ESP_RST, LOW); //skickar low till CIP_POWERDOWN
   delay(100);
   digitalWrite(ESP_RST, HIGH);
 }
@@ -20,12 +20,12 @@ void esp_reset()
 void esp_8266(float temperature = 0, float co2 = 0, float ljud = 0, float fukt = 0, float ljus = 0, int pir = 0, int antal = 0,float odds = 0)
 {
   float sample = 0;
-  const String apiKey   = "GD1CU4S6T3BEERF8";//"FSF6ZFHK4EULF367";
+  const String apiKey   = "GD1CU4S6T3BEERF8";
 
   // TCP connection
   String cmd = "AT+CIPSTART=\"TCP\",\"";
-  cmd += "184.106.153.149"; // api.thingspeak.com
-  cmd += "\",80";
+  cmd += "184.106.153.149";   //api.thingspeak.com
+  cmd += "\",80";             //port
   
   ser.println(cmd);
 
@@ -34,10 +34,10 @@ void esp_8266(float temperature = 0, float co2 = 0, float ljud = 0, float fukt =
     return;
   }
   
-  delay(1000);//för stabilitet
-  
-  
-  // prepare GET string
+  //Ger stabilitet och ökar risken att den kopplar upp
+  delay(1000);
+
+  //Förbereder datat som skall till Thingspeak
   String getStr = "GET /update?api_key=";
   getStr += apiKey;
   getStr += "&field1=";
@@ -63,14 +63,12 @@ void esp_8266(float temperature = 0, float co2 = 0, float ljud = 0, float fukt =
   cmd += String(getStr.length());
   ser.println(cmd);
 
-  if (ser.find(">")) {
+  if (ser.find(">")) {        //hittat sidan, då går det skriva
     ser.print(getStr);
     
   }
-  else {
-    //don't close if you can't read and write.
+  else {                      //CIPCLOSE
       ser.println("AT+CIPCLOSE");
-      //alert user
       Serial.println("AT+CIPCLOSE");
   }
 }
