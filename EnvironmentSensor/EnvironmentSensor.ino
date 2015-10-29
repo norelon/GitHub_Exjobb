@@ -20,7 +20,7 @@ const int antal_odds = 3;
 Sleep sleep;                  //sleep class
 
 void setup() {
-  Serial.begin(115200);                   //funkar inte med ser.begin() serial tar över?
+  //Serial.begin(115200);                   //funkar inte med ser.begin() serial tar över?
   Serial.println("Initializing pins");
   pinMode(A1, INPUT);                       //A1, ljussensor
   pinMode(IN_PIN, OUTPUT);                  //A2, fukt
@@ -36,14 +36,6 @@ void setup() {
   Serial.println("Initializing ESP8266");
   ser.begin(115200);                        //Sätt baud rate (bit/s)
   ser.println("AT+RST");                    //ESPsoftware reset
-  Serial.println("Initializing Temperature sensor");
-  Serial.print("Loading[");
-  const int antali = 10;
-  for (int i = 0; i < antali; i++) {
-    if (i % (antali/10) == 0) Serial.print(".");
-    temperature(385, 1);
-  }
-  Serial.println("]");
   Serial.println("Initializing interrupts");
   attachInterrupt(digitalPinToInterrupt(PIR_PIN), pir, RISING);
   attachInterrupt(digitalPinToInterrupt(3), inut, RISING);   //initializing inut
@@ -64,7 +56,7 @@ void loop() {
   tempmic=0;
   for (int i = 0; i < antal_loop; i++) {              //kör ett flertalgånger för att få stabilare värden med kalman.
     if(i == 3) digitalWrite(ESP_RST, LOW);            //spara stöm genom att stänga av ESP8266, för stabilitet på internet uppkopplingen placerades den här för att få en effektiv delay.
-    if(i == antal_loop-2) digitalWrite(ESP_RST, HIGH);//startar upp ESP8266 lite i förväg för att försäkra att den hinner starta.
+    if(i == antal_loop-4) digitalWrite(ESP_RST, HIGH);//startar upp ESP8266 lite i förväg för att försäkra att den hinner starta.
     tempmic = microphone(10000, 1);
     if (tempmic > micodds) micodds = tempmic;         // sparar största peakvärdet
     gas(1);
@@ -101,9 +93,9 @@ void loop() {
   
   esp_8266(temptemp, tempgas, micodds, tempmoist, templight, temppir, inut_tot, chance);  // skickar data till thingspeak
   
-  if(chance < 0.3 && temppir == 0) sleep_counter++;   // 26.53 väldigt väldigt låg odds.
+  if(chance < 0.3 && temppir == 0) sleep_counter++;   //under ~30% sannolikhet är ungefär minsta möjliga odds. 
   else sleep_counter = 0;
-  if(sleep_counter >= 5){                             //går i sleep mode tills interrupt påträffas
+  if(sleep_counter >= 5){                             //går i sleep mode tills interrupt påträffas, om oddsen varit låg länge
       Serial.println("--Sleep mode--");
       digitalWrite(ESP_RST, LOW);
       delay(100);

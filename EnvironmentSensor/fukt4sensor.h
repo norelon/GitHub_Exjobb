@@ -43,14 +43,8 @@ int moist(bool no_write = 1)
       Zp = Xp;
       Xe = G * (humidity - Zp) + Xp;
 
-      //Serial.print(F("Capacitance Value = "));
-      //Serial.print(capacitance, 3);
-      //Serial.print(F(" pF ("));
-
       if (no_write == 0) {
         Serial.print("\t");
-        //Serial.print(val);
-        //Serial.print(F(") "));
         Serial.print(capacitance);
         Serial.print("\t");
         Serial.print(Xe);

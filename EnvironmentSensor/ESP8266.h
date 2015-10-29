@@ -8,7 +8,7 @@
 
 int ESP_RST = 8;
 
-SoftwareSerial ser(1, 0); // RX, TX
+SoftwareSerial ser(1, 0);     //Väljer RX, TX som kommunikationsportar för 
 
 void esp_reset()
 {
@@ -22,7 +22,7 @@ void esp_8266(float temperature = 0, float co2 = 0, float ljud = 0, float fukt =
   float sample = 0;
   const String apiKey   = "GD1CU4S6T3BEERF8";
 
-  // TCP connection
+  //Starta en TCP uppkoppling
   String cmd = "AT+CIPSTART=\"TCP\",\"";
   cmd += "184.106.153.149";   //api.thingspeak.com
   cmd += "\",80";             //port
@@ -64,14 +64,11 @@ void esp_8266(float temperature = 0, float co2 = 0, float ljud = 0, float fukt =
   ser.println(cmd);
 
   if (ser.find(">")) {        //hittat sidan, då går det skriva
-    ser.print(getStr);
-    
+    ser.print(getStr);   
   }
   else {                      //CIPCLOSE
       ser.println("AT+CIPCLOSE");
       Serial.println("AT+CIPCLOSE");
   }
 }
-
-
 #endif

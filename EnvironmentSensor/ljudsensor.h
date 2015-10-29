@@ -16,7 +16,6 @@ float microphone(int trackmax = 10000, bool no_write = 1)
   static float Xp = 0.0;
   static float Zp = 0.0;
 
-  
   const float microphone_tyst = 570;                      //Högsta uppmätta värdet, då rummet är tyst
   const float microphone_prat = 600;                      //Uppmätt värde, för tal i rummet (det viktiga är prat/tyst)
   static float microphone_maxljud    = 0;                 //Sätt till litet
@@ -51,39 +50,6 @@ float microphone(int trackmax = 10000, bool no_write = 1)
       microphone_Xe = G * (microphone_numax - Zp) + Xp;
       
       return microphone_numax;
-      
-      /*if (microphone_numax < microphone_minmaxljud*(microphone_prat/microphone_tyst)){
-            if(no_write == 0)
-            {
-              Serial.print("Ljudsensor:\t");
-              Serial.print("Nej (");
-              Serial.print(microphone_numax);
-              Serial.print(")\tmax: ");
-              Serial.print(microphone_maxljud);
-              Serial.print(" minmax: ");
-              Serial.println(microphone_minmaxljud);
-            }
-            count_ja = 0;
-            return (((microphone_numax-microphone_minmaxljud/2)/(microphone_maxljud-microphone_minmaxljud/2))/4);
-      }
-      else{
-            if(no_write == 0){
-            Serial.print("Ljudsensor:\t");
-            Serial.print("Ja (");
-            Serial.print(microphone_numax);
-            Serial.print(")\tmax: ");
-            Serial.print(microphone_maxljud);
-            Serial.print(" minmax: ");
-            Serial.println(microphone_minmaxljud);
-            }
-            if (count_ja >= 7){
-              microphone_minmaxljud += 0.5;          //för att justerar för statiskt bakrunds bös
-              if (count_ja >= 29){
-                microphone_minmaxljud += 2.5;          //för att justerar för statiskt bakrunds bös
-              }
-            }
-            return ((microphone_numax-microphone_minmaxljud/2)/(microphone_maxljud-microphone_minmaxljud/2));
-      }*/
     }
   }
 }

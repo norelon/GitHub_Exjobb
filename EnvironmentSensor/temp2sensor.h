@@ -54,21 +54,9 @@ float temperature(int numberofvaliddutycycles = 385, bool no_write = 1) { //Fram
       Xe = G * (temperature - Zp) + Xp;
 
       if (no_write == 0) {
-        //Serial.print("Tempsensor:\t");
         Serial.print(temperature);        //Skriver temperaturen i monitorn
         Serial.print("\t");
         Serial.print(Xe);                 //Skriver Kalmantemperaturen i monitorn
-        /*Serial.print(" Pc:");
-        Serial.print(Pc);
-        Serial.print(" G:");
-        Serial.print(G);
-        Serial.print(" P:");
-        Serial.print(P);
-        Serial.print(" Xp:");
-        Serial.print(Xp);
-        Serial.print(" Zp:");
-        Serial.println(Zp);*/
-        
       }
       totalsum = 0;
       count = 0;
