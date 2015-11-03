@@ -30,16 +30,20 @@ float microphone(int trackmax = 10000, bool no_write = 1)
   while (1)
   {
     read5 = analogRead(MIC_PIN);
+    
+    //Ta fram max- respektive min värden
     if (read5 > microphone_maxljud) microphone_maxljud = read5;
     if (read5 < microphone_minimum) microphone_minimum = read5;
     if (read5 > microphone_maxljud) microphone_maxljud = read5;
     if (read5 > microphone_numax)   microphone_numax = read5;
-    track++;//increase track by 1 after every iteration
+    
+    //räkna upp mot samplings periodens slut
+    track++;
     if (track == trackmax) {
       count_ja++;
       track = 0; //set back track to zero
-      if (microphone_numax < microphone_minmaxljud && microphone_numax > (microphone_maxljud * 0.55)
-          && microphone_minimum < microphone_minmaxljud) microphone_minmaxljud = microphone_numax;
+      if (microphone_numax < microphone_minmaxljud && microphone_numax > (microphone_maxljud * 0.55) 
+          && microphone_minimum < microphone_minmaxljud) microphone_minmaxljud = microphone_numax;  //väljer nuvarande toppvärde
       
       //Kalmanprocess
       Pc = P + varianceProcess;

@@ -43,7 +43,7 @@ int moist(bool no_write = 1)
       Zp = Xp;
       Xe = G * (humidity - Zp) + Xp;
 
-      if (no_write == 0) {
+      if (no_write == 0) {            //får funtionen skriva ut felvärden?
         Serial.print("\t");
         Serial.print(capacitance);
         Serial.print("\t");

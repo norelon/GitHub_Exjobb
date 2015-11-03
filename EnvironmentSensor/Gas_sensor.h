@@ -21,7 +21,7 @@ float gas(bool no_write = 1) {
   sensorValue = analogRead(GAS_PIN);            //Läs analoga värdet
   sensorValue = (sensorValue / 1000) + 0.175;   //Beräkning till V samt kalibrering enligt 350 ppm utomhus
   ppm = ((sensorValue - 0.33) / 0.000066);      //Uppskattning av formel från V till PPM enligt datablad
-  static float Xe = ppm;                      //Startvärde kalman
+  static float Xe = ppm;                        //Startvärde kalman
   //Kalmanprocess
   Pc = P + varianceProcess;
   G = Pc / (Pc + variance);
@@ -30,7 +30,7 @@ float gas(bool no_write = 1) {
   Zp = Xp;
   Xe = G * (ppm - Zp) + Xp;
 
-  if (no_write == 0) {
+  if (no_write == 0) {                          //får funtionen skriva ut felvärden?
     Serial.print("\t");
     Serial.print(ppm);
     //Serial.println("");

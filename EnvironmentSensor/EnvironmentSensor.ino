@@ -34,7 +34,7 @@ void setup() {
   pinMode(ESP_RST, OUTPUT);                 //D8, esp reset pin
   pinMode(PWM_PIN, INPUT);                  //D13, temp
   Serial.println("Initializing ESP8266");
-  ser.begin(115200);                        //Sätt baud rate (bit/s)
+  ser.begin(115200);                        //Sätt baud rate (bit/s) för kommunikation med ESP8266
   ser.println("AT+RST");                    //ESPsoftware reset
   Serial.println("Initializing interrupts");
   attachInterrupt(digitalPinToInterrupt(PIR_PIN), pir, RISING);
@@ -52,7 +52,7 @@ void loop() {
   float chance    = 0;
   static unsigned int sleep_counter = 0;
  
-  const int antal_loop = 10; //bör vara större än 5
+  const int antal_loop = 10; //bör vara större än 7
   tempmic=0;
   for (int i = 0; i < antal_loop; i++) {              //kör ett flertalgånger för att få stabilare värden med kalman.
     if(i == 3) digitalWrite(ESP_RST, LOW);            //spara stöm genom att stänga av ESP8266, för stabilitet på internet uppkopplingen placerades den här för att få en effektiv delay.
