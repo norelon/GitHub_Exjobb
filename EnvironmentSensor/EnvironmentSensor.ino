@@ -1,6 +1,5 @@
 #include "ljudsensor.h"       //microphone();
 #include "temp2sensor.h"      //temperature();
-#include "fukt4sensor.h"      //moist();
 #include "Gas_sensor.h"       //gas();
 #include "pirsensor.h"        //pir();
 #include "loginut.h"          //inut();
@@ -23,8 +22,6 @@ void setup() {
   //Serial.begin(115200);                   //funkar inte med ser.begin() serial tar över?
   Serial.println("Initializing pins");
   pinMode(A1, INPUT);                       //A1, ljussensor
-  pinMode(IN_PIN, OUTPUT);                  //A2, fukt
-  pinMode(OUT_PIN, OUTPUT);                 //A3, fukt
   pinMode(MIC_PIN, INPUT);                  //A4, mikrofon
   pinMode(GAS_PIN, INPUT);                  //A5, co2
   pinMode(PIR_PIN, INPUT);                  //D2, PIR interrupt
@@ -56,11 +53,10 @@ void loop() {
   tempmic=0;
   for (int i = 0; i < antal_loop; i++) {              //kör ett flertalgånger för att få stabilare värden med kalman.
     if(i == 3) digitalWrite(ESP_RST, LOW);            //spara stöm genom att stänga av ESP8266, för stabilitet på internet uppkopplingen placerades den här för att få en effektiv delay.
-    if(i == antal_loop-4) digitalWrite(ESP_RST, HIGH);//startar upp ESP8266 lite i förväg för att försäkra att den hinner starta.
+    if(i == antal_loop-5) digitalWrite(ESP_RST, HIGH);//startar upp ESP8266 lite i förväg för att försäkra att den hinner starta.
     tempmic = microphone(10000, 1);
     if (tempmic > micodds) micodds = tempmic;         // sparar största peakvärdet
     gas(1);
-    moist(1);
     temperature(385, 1);
   }
   temptemp = temperature(385, 0);
@@ -69,7 +65,7 @@ void loop() {
   Serial.print(micodds);
   Serial.print("\t");
   Serial.print(microphone_Xe);
-  tempmoist = moist(0);
+  Serial.print("\tn/a\tn/a");
   Serial.print("\t");
   templight = light();
   Serial.print(templight);

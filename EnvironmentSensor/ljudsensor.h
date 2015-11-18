@@ -5,11 +5,11 @@
 byte MIC_PIN = 4;                                         //Deklarerar ingång för tempsensor
 
 float microphone_minmaxljud = 1023;                       //Variabel för att hitta tyst
-float microphone_Xe = 600;                                   //Startvärde
+float microphone_Xe = 600;                                //Startvärde
 float microphone(int trackmax = 10000, bool no_write = 1)
 {
-  static float variance = 82.16035311;                      //Uppmätt värde efter 200 samplingar utan Kalman
-  static float varianceProcess = 1e-4;                      //Snabbhet i systemet
+  static float variance = 82.16035311;                    //Uppmätt värde efter 200 samplingar utan Kalman
+  static float varianceProcess = 1e-4;                    //Snabbhet i systemet
   static float Pc = 0.0;
   static float G = 0.0;
   static float P = 1.0;

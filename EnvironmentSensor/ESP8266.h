@@ -1,6 +1,3 @@
-//CCGuest
-//+1cyber!
-//57146
 #ifndef esp8266_h
 #define esp8266_h
 #include "arduino.h"
